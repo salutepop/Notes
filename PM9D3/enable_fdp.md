@@ -1,10 +1,18 @@
 # Enabling FDP
 ## 설치 파일
 1. nvme-cli
-git clone https://github.com/linux-nvme/nvme-cli.git
-meson setup --force-fallback-for=libnvme,json-c .build
-meson compile -C .build
-meson install -C .build
+   ```shell
+   git clone https://github.com/linux-nvme/nvme-cli.git
+   cd nvme-cli
+   meson setup --force-fallback-for=libnvme,json-c .build
+   meson compile -C .build
+   meson install -C .build
+   ```
+2. fio
+   ```shell
+   git clone https://github.com/axboe/fio.git
+   ```
+
 
 ## CNS 설정
 1. 기존 namespace 삭제
@@ -70,7 +78,16 @@ meson install -C .build
    ```
 
 ## 기타 정보 확인
-1. namespace id
+1. nvme list 확인
+   ```shell
+   sudo nvme list
+   Node                  Generic               SN                   Model                                    Namespace  Usage                      Format           FW Rev
+--------------------- --------------------- -------------------- ---------------------------------------- ---------- -------------------------- ---------------- --------
+/dev/nvme0n1          /dev/ng0n1            PHKS015300QX375AGN   INTEL SSDPED1K375GA                      0x1        375.08  GB / 375.08  GB      4 KiB +  0 B   E2010485
+/dev/nvme1n1          /dev/ng1n1            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x1          4.19  GB /   4.19  GB      4 KiB +  0 B   LDA64F2Q
+/dev/nvme1n2          /dev/ng1n2            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x2          3.76  TB /   3.76  TB      4 KiB +  0 B   LDA64F2Q
+   ```
+2. namespace id
    ```shell
    $ sudo nvme id-ns /dev/nvme0n1
    NVME Identify Namespace 1:
@@ -113,7 +130,7 @@ meson install -C .build
       lbaf  0 : ms:0   lbads:12 rp:0 (in use)
       lbaf  1 : ms:64  lbads:12 rp:0
    ```
-2. FDP config
+3. FDP config
    ```shell
    $ sudo nvme fdp configs /dev/nvme0 -e 1
    FDP Attributes: 0x80
@@ -133,7 +150,7 @@ meson install -C .build
    [6]: Initially Isolated
    [7]: Initially Isolated
    ```
-3. RU 남은 용량 확인
+4. RU 남은 용량 확인
    ```shell
    $ sudo nvme fdp stats /dev/nvme1n2
 
