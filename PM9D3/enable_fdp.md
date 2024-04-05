@@ -1,4 +1,10 @@
 # Enabling FDP
+## 설치 파일
+1. nvme-cli
+git clone https://github.com/linux-nvme/nvme-cli.git
+meson setup --force-fallback-for=libnvme,json-c .build
+meson compile -C .build
+meson install -C .build
 
 ## CNS 설정
 1. 기존 namespace 삭제
@@ -26,21 +32,36 @@
    $ sudo nvme id-ctrl /dev/nvme0 | grep -i ctratt
    ctratt    : 0x80290
    ```
-2. 기존 namespace 삭제
+2. FDP Enable
+   1. Enable
+   ```shell
+   $ sudo nvme set-feaeture /dev/nvme0 -f 0x1d -c 1 -s
+   set-feature:0x1d (Flexible Direct Placement), value:00000000, cdw12:0x00000001, save:0x1
+   ```
+   2. Disable
+   ```shell
+   $ sudo nvme set-feature /dev/nvme0 -f 0x1d -c 0 -s
+   ```
+   3. Check
+   ```shell
+   $ sudo nvme get-feature /dev/nvme0 -f 0x1d -H
+   get-feature:0x1d (Flexible Direct Placement), Current value:0x00000001
+   ```
+3. 기존 namespace 삭제
    ```shell
    $ sudo nvme delete-ns /dev/nvme0 -n 1
    delete-ns: Success, deleted nsid:1
    $ sudo nvme delete-ns /dev/nvme0 -n 2
    delete-ns: Success, deleted nsid:2
    ```
-3. namespace 생성
+4. namespace 생성
    ```shell
    $ sudo nvme create-ns /dev/nvme0 -s 1024000 -c 1024000 -f 0
    create-ns: Success, created nsid:1
    $ sudo nvme create-ns /dev/nvme0 -s 917100000 -c 917100000 -f 0 -e 1 -n 7 -p 1,2,3,4,5,6,7
    create-ns: Success, created nsid:2
    ```
-4. namespace 연결
+5. namespace 연결
    ```shell
    $ sudo nvme attach-ns /dev/nvme0 -n 1 -c 7
    attach-ns: Success, nsid:1
@@ -111,4 +132,36 @@
    [5]: Initially Isolated
    [6]: Initially Isolated
    [7]: Initially Isolated
+   ```
+3. RU 남은 용량 확인
+   ```shell
+   $ sudo nvme fdp stats /dev/nvme1n2
+
+   Placement Identifier 0; Reclaim Unit Handle Identifier 1
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 1; Reclaim Unit Handle Identifier 2
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 2; Reclaim Unit Handle Identifier 3
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 3; Reclaim Unit Handle Identifier 4
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 4; Reclaim Unit Handle Identifier 5
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 5; Reclaim Unit Handle Identifier 6
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
+
+   Placement Identifier 6; Reclaim Unit Handle Identifier 7
+   Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
+   Reclaim Unit Available Media Writes (RUAMW): 3193344
    ```
