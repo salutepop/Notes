@@ -51,7 +51,7 @@
   - 고정된 zone 구성은 다양한 워크로드에서 최적으로 동작하기 어려움
     - Device가 많은 Acitve zone을 지원해도, App.에서는 제한된 수만 활용
     - 1개의 write는 1개의 zone에만 write하여 bandwidth를 충분히 활용하지 못함
-    - `이해필요`
+    - `이해필요` > tenant당 logical zone 1개만 쓰는 문제(뒤에서 v-zone으로 극복!)
     ```
     file systems like BtrFS [36] and F2FS [25] support ZNS SSDs but write user data to only one zone at a time, resulting in suboptimal utilization of the available active resources. This issue is further exacerbated when the device has multiple namespaces serving different applications.
     ```
@@ -71,7 +71,7 @@
   - 3가지 기능
     - namespace/logical zone 상에서 app.과 상호작용
     - app. 요구사항에 따라 logical to physical zone 구성 조율
-    - I/O coommands 스케쥴링을 통해 device 최대성능 사용 및 `avoid head-of-line blocking`
+    - I/O commands 스케쥴링을 통해 device 최대성능 사용 및 `avoid head-of-line blocking`
 
 ## Zone striping
 - RAID 0와 같이 high throughput을 위한 기법
@@ -91,7 +91,7 @@
   - I/O workload에 따라 최적의 stripe size/width를 결정해야 함
   - stripe width 클수록 active zone을 많이 필요로 하고, app.의 동시성을 악화시킴
   - striping된 logical zone은 높은 bandwidth를 가질 수 있지만, total active zone을 고려해서 striping 되어야 함.
-  - `이해필요`
+  - `이해필요` > stripe size-width trade off 필요
   ```
    An ideal strip size can be the NAND page size, but it also has to be adjusted to the stripe width to provide a consistent full stripe size.
   ```
@@ -143,7 +143,7 @@
   - small zone
     - physical zone : 1개 die내에서 1개 이상의 blocks (erasure unit) 으로 구성
     - max. active physical zone의 수는 die 갯수 * 2배
-    - 모든 die가 완전치 사용되면, 모든 다이는 동일한 수의 active zone을 갖게 됨
+    - 모든 die가 완전히 사용되면, 모든 다이는 동일한 수의 active zone을 갖게 됨
     - 모든 die에 physical zone을 균등하게 분산 시킴
     - ware-leveling 요구사항에 따라 zone 할당 (모든 die를 순회하며 zone할당)
     - 정확한 channel/zone의 정확한 구조를 알지 못해도 문제 없음

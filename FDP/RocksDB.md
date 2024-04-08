@@ -1,7 +1,8 @@
 # RocksDB
 * Paper : https://www.usenix.org/conference/fast21/presentation/dong
 * Ref : http://165.132.172.98/wp-content/uploads/2020/07/space_amplification_7%EC%9B%94.pdf
-* 
+* https://github.com/facebook/rocksdb/wiki/RocksDB-Overview
+
 ## Keyword
 - Log-Structured Merge (LSM) trees
   - primary data structure to store data
