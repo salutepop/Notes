@@ -1,16 +1,33 @@
 # Enabling FDP
-## 설치 파일
-1. nvme-cli
+## 필요한 프로그램
+1. nvme-cli (필수)
    ```shell
    git clone https://github.com/linux-nvme/nvme-cli.git
    cd nvme-cli
    meson setup --force-fallback-for=libnvme,json-c .build
    meson compile -C .build
-   meson install -C .build
+   sudo meson install -C .build
    ```
-2. fio
+2. kernel version 6.2 이상 (필수)
+   ```shell
+   sudo apt update
+   sudo apt upgrade
+   sudo apt install build-essential dwarves python3 libncurses-dev flex bison libssl-dev bc libelf-dev zstd gnupg2 wget
+   ```
+   ```shell
+   git clone https://github.com/torvalds/linux.git
+   make -j`nproc` #make -j{cores}
+   make modules_install
+   sudo make install
+   sudo reboot
+   ```
+3. fio (선택)
    ```shell
    git clone https://github.com/axboe/fio.git
+   cd fio
+   ./configure
+   make
+   sudo make install
    ```
 
 
@@ -82,10 +99,9 @@
    ```shell
    sudo nvme list
    Node                  Generic               SN                   Model                                    Namespace  Usage                      Format           FW Rev
---------------------- --------------------- -------------------- ---------------------------------------- ---------- -------------------------- ---------------- --------
-/dev/nvme0n1          /dev/ng0n1            PHKS015300QX375AGN   INTEL SSDPED1K375GA                      0x1        375.08  GB / 375.08  GB      4 KiB +  0 B   E2010485
-/dev/nvme1n1          /dev/ng1n1            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x1          4.19  GB /   4.19  GB      4 KiB +  0 B   LDA64F2Q
-/dev/nvme1n2          /dev/ng1n2            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x2          3.76  TB /   3.76  TB      4 KiB +  0 B   LDA64F2Q
+   /dev/nvme0n1          /dev/ng0n1            PHKS015300QX375AGN   INTEL SSDPED1K375GA                      0x1        375.08  GB / 375.08  GB      4 KiB +  0 B   E2010485
+   /dev/nvme1n1          /dev/ng1n1            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x1          4.19  GB /   4.19  GB      4 KiB +  0 B   LDA64F2Q
+   /dev/nvme1n2          /dev/ng1n2            S77UNG0TB00664       MZOL63T8HDLT-00AFB                       0x2          3.76  TB /   3.76  TB      4 KiB +  0 B   LDA64F2Q
    ```
 2. namespace id
    ```shell

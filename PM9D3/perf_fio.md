@@ -1,7 +1,6 @@
 # 기본 성능 측정 (CNS Mode)
-WRITE: bw=1462MiB/s (1533MB/s)
-READ: bw=1948MiB/s (2043MB/s)
-
+- WRITE: bw=1462MiB/s (1533MB/s)
+- READ: bw=1948MiB/s (2043MB/s)
 
 ```c
 <WRITE>
