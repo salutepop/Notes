@@ -17,7 +17,7 @@
    ```shell
    git clone https://github.com/torvalds/linux.git
    make -j`nproc` #make -j{cores}
-   make modules_install
+   sudo make modules_install -j`nproc`
    sudo make install
    sudo reboot
    ```
@@ -166,9 +166,18 @@
    [6]: Initially Isolated
    [7]: Initially Isolated
    ```
-4. RU 남은 용량 확인
+
+4. Media Status 확인
    ```shell
-   $ sudo nvme fdp stats /dev/nvme1n2
+   $ sudo nvme fdp stats /dev/nvme1n2 -e 1
+   Host Bytes with Metadata Written (HBMW): 17919811584
+   Media Bytes with Metadata Written (MBMW): 18205097984
+   Media Bytes Erased (MBE): 73081552896
+   ```
+   
+5. RU 남은 용량 확인
+   ```shell
+   $ sudo nvme fdp status /dev/nvme1n2
 
    Placement Identifier 0; Reclaim Unit Handle Identifier 1
    Estimated Active Reclaim Unit Time Remaining (EARUTR): 0
