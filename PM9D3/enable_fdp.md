@@ -18,6 +18,7 @@
    git clone https://github.com/torvalds/linux.git
    make -j`nproc` #make -j{cores}
    sudo make modules_install -j`nproc`
+   sudo make headers_install INSTALL_HDR_PATH=/usr
    sudo make install
    sudo reboot
    ```
