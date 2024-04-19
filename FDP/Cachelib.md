@@ -61,7 +61,7 @@
 # block device name
 DEV="nvme0n1"
 # 실행파일 경로
-CACHEBENCH="CacheLib/opt/cachelib/bin/cachebench" 
+CACHEBENCH="CacheLib/opt/cachelib/bin/cachebench"
 # config는 평가조건에 따라 설정 필요
 FILE_CONFIG="CacheLib/opt/cachelib/test_configs/ssd_perf/graph_cache_leader/config.json" 
 # 결과 로그파일 경로

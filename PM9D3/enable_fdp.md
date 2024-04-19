@@ -1,14 +1,6 @@
 # Enabling FDP
 ## 필요한 프로그램
-1. nvme-cli (필수)
-   ```shell
-   git clone https://github.com/linux-nvme/nvme-cli.git
-   cd nvme-cli
-   meson setup --force-fallback-for=libnvme,json-c .build
-   meson compile -C .build
-   sudo meson install -C .build
-   ```
-2. kernel version 6.2 이상 (필수)
+1. kernel version 6.2 이상 (필수)
    ```shell
    sudo apt update
    sudo apt upgrade
@@ -16,12 +8,26 @@
    ```
    ```shell
    git clone https://github.com/torvalds/linux.git
+   cp /boot/config-$(uname -r) ./.config
+   make menuconfig
+   vi .config
+      CONFIG_SYSTEM_TRUSTED_KEY=""
+      CONFIG_SYSTEM_REVOCATION_KEYS=""
    make -j`nproc` #make -j{cores}
    sudo make modules_install -j`nproc`
    sudo make headers_install INSTALL_HDR_PATH=/usr
    sudo make install
    sudo reboot
+   ``` 
+2. nvme-cli (필수)
+   ```shell
+   git clone https://github.com/linux-nvme/nvme-cli.git
+   cd nvme-cli
+   meson setup --force-fallback-for=libnvme,json-c .build
+   meson compile -C .build
+   sudo meson install -C .build
    ```
+
 3. fio (선택)
    ```shell
    git clone https://github.com/axboe/fio.git
@@ -31,6 +37,26 @@
    sudo make install
    ```
 
+4. Cacahelib (선택)
+   ```shell
+   git clone https://github.com/facebook/CacheLib
+   ./contrib/build.sh -j -T
+   or
+   ./contrib/build.sh -d -v -j -O -S # 패키지 설치, git-pull skip
+
+   ```
+
+   - 실행파일 생성 경로
+   ```shell
+    CacheLib/opt/cachelib/bin/cachebench  
+   ```
+5. liburing (선택?)
+   ```shell
+   git clone https://github.com/axboe/liburing.git
+   ./configure --cc=gcc --cxx=g++;
+   make -j$(nproc);
+   sudo make install;
+   ```
 
 ## CNS 설정
 1. 기존 namespace 삭제
