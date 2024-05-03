@@ -4,6 +4,7 @@
    - cachelib에서 FDP 사용하는 방법 파악 (아마 liburing.h 기반)
    - RocksDB에서 ZNS를 사용하기 위한 파일시스템(ZenFS)에서 raw device 접근/제어 방법 파악
    - RocksDB에서 FDP를 사용하고, 이를 관리하는 파일시스템 구현
+   - RocksDB Data 속성별로 FDP RU Handle 분리를 위해 Data별 I/O Access point 파악
 
 
 ## RocksDB Filesystem Background
@@ -25,6 +26,7 @@ Study 예정
       pread(direct ? read_direct_f_ : read_f_, buf, size, pos)
       pwrite(write_f_, data, size, pos)
       ```
+참고 데이터
 ---
 - zbd_zenfs.cc : ZonedBlockDevice::ZonedBlockDevice() 과정에서 backend type에 따라 zbd_be_ 결정.
    ZbdBackendType::kBlockDev or ZbdBackendType::kZoneFS
