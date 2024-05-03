@@ -80,8 +80,66 @@ sudo $CACHEBENCH -json_test_config $FILE_CONFIG —progress_stats_file $FILE_OUT
 ## config file
 
 
+## seperate handles
+BigHash / BlockCache 인스턴스 생성 시
+device를 지정하고, 해당 device 에서 handle 할당 받음 (device는 사전에 fdp로 설정 되어있어야함)
+ - device_.allocatePlacementHandle()
+handle은 max pid (ruh_status->nruhsd - 1)까지 incremental하게 증가하며 할당
+BigHash에 handle 0, BlockCache에 handle 1 이런식
 
 ## cns re-produce
+- 2401 (io_uring)
+  - cns 평가 시 I/O Error발생(multi threads 문제..?) 해결해야함. 아래 `handleCompletion`코드 확인
+  - fdp 평가 시 정상적으로 진행 됨. 다만 waf가 조금씩 증가하긴 하지만, 2시간 수행 시에도 0.94 임 (1 이하)
+- 2206 (psync)
+  - cns 평가 시 정상 진행 됨
+  - fdp 해봐야함
+
+```cpp
+void AsyncIoContext::handleCompletion(
+▏   folly::Range<folly::AsyncBaseOp**>& completed) {
+▏ for (auto op : completed) {
+▏ ▏ // AsyncBaseOp should be freed after completion
+▏ ▏ std::unique_ptr<folly::AsyncBaseOp> aop(op);
+▏ ▏ XDCHECK_EQ(aop->state(), folly::AsyncBaseOp::State::COMPLETED);
+▏ ▏
+▏ ▏ auto iop = reinterpret_cast<IOOp*>(aop->getUserData());
+▏ ▏ XDCHECK(iop);
+▏ ▏
+▏ ▏ XDCHECK_GE(numOutstanding_, 0u);
+▏ ▏ numOutstanding_--;
+▏ ▏ numCompleted_++;
+▏ ▏
+▏ ▏ // handle retry                                                                 
+▏ ▏ if (aop->result() == -EAGAIN && iop->resubmitted_ < retryLimit_) {
+▏ ▏ ▏ iop->resubmitted_++;
+▏ ▏ ▏ XLOG_N_PER_MS(ERR, 100, 1000)
+▏ ▏ ▏ ▏   << fmt::format("[{}] resubmitting IO {}", getName(), iop->toString());
+▏ ▏ ▏ submitIo(*iop);
+▏ ▏ ▏ continue;
+▏ ▏ }
+▏ ▏
+▏ ▏ // Complete the IO and wake up waiter if needed
+▏ ▏ if (iop->resubmitted_ > 0) {
+▏ ▏ ▏ XLOG_N_PER_MS(ERR, 100, 1000)
+▏ ▏ ▏ ▏   << fmt::format("[{}] resubmitted IO completed ({}) {}", getName(),
+▏ ▏ ▏ ▏   ▏              aop->result(), iop->toString());
+▏ ▏ }
+▏ ▏
+▏ ▏ auto len = aop->result();
+▏ ▏ if (fdpNvmeVec_.size() > 0) {
+▏ ▏ ▏ // 0 means success here, so get the completed size from iop
+▏ ▏ ▏ len = !len ? iop->size_ : 0;
+▏ ▏ }
+▏ ▏ iop->done(len);
+▏ ▏
+▏ ▏ if (!waitList_.empty()) {                                                       
+▏ ▏ ▏ auto& waiter = waitList_.front();                                             
+▏ ▏ ▏ waitList_.pop_front();                                                        
+▏ ▏ ▏ waiter.baton_.post();                                                         
+▏ ▏ }                                                                               
+▏ }          
+```
 
 ## fdp enable
 "cache_config": {
