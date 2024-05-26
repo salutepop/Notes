@@ -38,6 +38,10 @@
    ```
 
 4. Cacahelib (선택)
+   1. libunwind8 문제 발생 시, 다음 명령어로 downgrade 진행
+   ```shell
+   
+   ```
    ```shell
    git clone https://github.com/facebook/CacheLib
    ./contrib/build.sh -j -T

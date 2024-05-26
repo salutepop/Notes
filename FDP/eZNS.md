@@ -1,6 +1,6 @@
 # eZNS
 * Paper : https://www.usenix.org/conference/osdi23/presentation/min
-
+* ballooning paper : https://www.waldspurger.org/carl/papers/esx-mem-osdi02.pdf
 ## Keyword
 - head-of-line blocking(HOL) : network에서 FIFO input buffer를 사용하는 경우 앞선 패킷이 전송되기 전까지 뒤에있는 패킷은 전송할 수 없음
 ## Flash memory

@@ -1,3 +1,53 @@
+## i/o issue
+thread_init
+ioengine 마다 .queue 함수 지정 (fio_ioring_queue)
+
+struct ioring_data *ld = td->io_ops_data;
+struct io_sq_ring *ring = &ld->sq_ring;
+if (!strcmp(td->io_ops->name, "io_uring_cmd") && 
+       o->cmd_type == FIO_URING_CMD_NVME)▏ fio_ioring_cmd_nvme_pi(td, io_u);
+> fio_ioring_cmd_nvme_pi() 를 쓰네..?
+ring->array[tail & ld->sq_ring_mask] = io_u->index;
+atomic_store_release(ring->tail, next_tail);
+
+```c (liburing)
+struct io_uring {
+▏ struct io_uring_sq sq;
+▏ struct io_uring_cq cq;
+▏ unsigned flags;
+▏ int ring_fd;
+▏
+▏ unsigned features;
+▏ int enter_ring_fd;
+▏ __u8 int_flags;
+▏ __u8 pad[3];
+▏ unsigned pad2;
+};
+```
+
+```c (fio)
+struct ioring_data {
+  int ring_fd;
+  struct io_u **io_u_index;
+  char *md_buf;
+  int *fds;
+  struct io_sq_ring sq_ringz;
+  struct io_uring_sqe *sqes;
+  struct iovec *iovecs;
+  unsigned sq_ring_mask;
+  struct io_cq_ring cq_ring;
+  unsigned cq_ring_mask;
+  int queued;
+  int cq_ring_off;
+  unsigned iodepth;
+  int prepped;
+  struct ioring_mmap mmap[3];
+  struct cmdprio cmdprio;
+  struct nvme_dsm *dsm;
+};
+```
+## 실험
+
 nvme_setup_cmd : dsmgmt의 65535 (0xffff) 단위로 placement id 설정 됨
 plid 0 = 0
 plid 1 = 65536 (0x10000)
