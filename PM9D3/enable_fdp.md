@@ -28,7 +28,7 @@
    sudo meson install -C .build
    ```
 
-3. fio (선택)
+3. fio
    ```shell
    git clone https://github.com/axboe/fio.git
    cd fio
@@ -37,16 +37,13 @@
    sudo make install
    ```
 
-4. Cacahelib (선택)
+4. Cacahelib
    1. libunwind8 문제 발생 시, 다음 명령어로 downgrade 진행
-   ```shell
-   
-   ```
    ```shell
    git clone https://github.com/facebook/CacheLib
    ./contrib/build.sh -j -T
    or
-   ./contrib/build.sh -d -v -j -O -S # 패키지 설치, git-pull skip
+   ./contrib/build.sh -d -v -j -O -S # skip 패키지 설치, git-pull
 
    ```
 
@@ -54,7 +51,7 @@
    ```shell
     CacheLib/opt/cachelib/bin/cachebench  
    ```
-5. liburing (선택?)
+5. liburing
    ```shell
    git clone https://github.com/axboe/liburing.git
    ./configure --cc=gcc --cxx=g++;
